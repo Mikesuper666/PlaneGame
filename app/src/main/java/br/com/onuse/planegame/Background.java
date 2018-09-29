@@ -8,10 +8,11 @@ public class Background {
     private int x, y, dx;
     private int largura;
 
-    public Background(Bitmap res, int speed){
+    public Background(Bitmap res, int speed, int y){
         image = res;
         dx = speed;
         this.largura = GamePanel.WIDTH;
+        this.y = y;
     }
 
     public void update(){

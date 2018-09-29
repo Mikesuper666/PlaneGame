@@ -6,11 +6,13 @@ import android.graphics.Typeface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.util.ArrayList;
+
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
     public static final int WIDTH = 800;
     public static final int HEIGHT = 600;
     private MainThread thread;
-    private Background[] bg = new Background[4];
+    private ArrayList<Background> bg;
     Typeface font;
     public GamePanel(Context context){
         super(context);
@@ -25,9 +27,14 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        for(int i = 0; i < bg.length; i++){
-            bg[i] = new Background(Assets.getBitmapFromMemory("bg"+i),-1-i);
-        }//adiciona os bgs dinamidamente
+        bg = new ArrayList<>();
+
+        bg.add(new Background(Assets.getBitmapFromMemory("bg0"),-1,0));
+        bg.add(new Background(Assets.getBitmapFromMemory("bg1"),-2,(int)(HEIGHT * 0.34f)));
+        bg.add(new Background(Assets.getBitmapFromMemory("bg2"),-3,(int)(HEIGHT * 0.5f)));
+        bg.add(new Background(Assets.getBitmapFromMemory("bg3"),-4,(int)(HEIGHT * 0.6f)));
+        bg.add(new Background(Assets.getBitmapFromMemory("bg4"),-5,HEIGHT-45));
+
 
 
         thread = new MainThread(getHolder(), this);
@@ -60,6 +67,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
 
     public void update(){
         for (Background aBg : bg) {
+            //update missile
             aBg.update();
         }
     }

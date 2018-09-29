@@ -59,8 +59,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     public void update(){
-        for(int i = 0; i < bg.length; i++){
-            bg[i].update();
+        for (Background aBg : bg) {
+            aBg.update();
         }
     }
 
@@ -74,8 +74,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
         if (canvas != null) {
             final int savedState = canvas.save();
             canvas.scale(scaleFactorX, scaleFactorY);
-            for(int i = 0; i < bg.length; i++){
-                bg[i].draw(canvas);
+            for (Background aBg : bg) {
+                aBg.draw(canvas);
             }
 
             canvas.restoreToCount(savedState);

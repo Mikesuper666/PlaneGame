@@ -3,6 +3,7 @@ package br.com.onuse.planegame;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Typeface;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -36,7 +37,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
         bg.add(new Background(Assets.getBitmapFromMemory("bg3"),-4,(int)(HEIGHT * 0.6f)));
         bg.add(new Background(Assets.getBitmapFromMemory("bg4"),-5,HEIGHT-45));
 
-        player = new Player(Assets.getBitmapFromMemory("player"),  160, 100, 2);
+        player = new Player(Assets.getBitmapFromMemory("player"),  120, 80, 2);
 
 
         thread = new MainThread(getHolder(), this);
@@ -68,10 +69,31 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
 
     public void update(){
         for (Background aBg : bg) {
-            //atualiza o backgroung
+            //atualiza o background
             aBg.update();
         }
         player.update();
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if(event.getAction()==MotionEvent.ACTION_DOWN) {
+            if (!player.getPlaying()) {
+                player.setPlaying(true);
+                player.setUp(true);
+            }
+            if(player.getPlaying())
+            {
+                player.setUp(true);
+            }
+            return true;
+        }
+        if(event.getAction()==MotionEvent.ACTION_UP)
+        {
+            player.setUp(false);
+            return true;
+        }
+        return super.onTouchEvent(event);
     }
 
     @Override

@@ -2,6 +2,7 @@ package br.com.onuse.planegame;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 
 public class Player extends GameObject {
     private Bitmap spriteSheet;
@@ -40,21 +41,40 @@ public class Player extends GameObject {
             startTime = System.nanoTime();
         }
         animation.update();
-/*
+
         if(up){
             dy -=1;
+            rotacao--;
         }else{
             dy +=1;
+            rotacao++;
         }
-*/
+
+        if(rotacao>14)rotacao = 14;
+        if(rotacao<-14)rotacao = -14;
+
         if(dy>14)dy = 14;
         if(dy<-14)dy = -14;
 
         y+= dy*2;
+
+        if(y<0)
+            y=0;
+        if(y>(GamePanel.HEIGHT-height))
+            y=(GamePanel.HEIGHT-height);
     }
 
     public void draw(Canvas canvas){
-        canvas.drawBitmap(animation.getImage(), x, y,null);
+
+        Matrix matrix = new Matrix();
+
+        matrix.postRotate(rotacao);
+
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(animation.getImage(), width, height, true);
+
+        Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
+
+        canvas.drawBitmap(rotatedBitmap, x, y,null);
     }
 
     public int getScore(){return score;}

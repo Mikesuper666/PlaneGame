@@ -36,6 +36,8 @@ public class Assets {
         for(int i = 0; i <=4; i++){
             bitmapDb.put("bg"+i, getBitmap(context, "background/bg"+i+".png"));
         }
+        //player
+        bitmapDb.put("player", getBitmap(context, "sprites/player.png"));
     }
 
     /**

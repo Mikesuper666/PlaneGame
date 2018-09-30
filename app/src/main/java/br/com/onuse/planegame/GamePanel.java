@@ -13,12 +13,13 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
     public static final int HEIGHT = 600;
     private MainThread thread;
     private ArrayList<Background> bg;
+    private Player player;
     Typeface font;
     public GamePanel(Context context){
         super(context);
         Assets assets = new Assets(getContext(), WIDTH, HEIGHT);
         font = Typeface.createFromAsset(getContext().getAssets(), "fonts/font.ttf");
-        //add the callback to the surfaceholder to intercept events
+        //adiciona o callback para o surfaceholder e interpleta os eventos
         getHolder().addCallback(this);
 
         //make gamePanel focusable so it can handle events
@@ -35,10 +36,11 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
         bg.add(new Background(Assets.getBitmapFromMemory("bg3"),-4,(int)(HEIGHT * 0.6f)));
         bg.add(new Background(Assets.getBitmapFromMemory("bg4"),-5,HEIGHT-45));
 
+        player = new Player(Assets.getBitmapFromMemory("player"),  160, 100, 2);
 
 
         thread = new MainThread(getHolder(), this);
-        //we can safely start the game loop
+        //inicia o looping
         thread.setRunning(true);
         thread.start();
     }
@@ -61,15 +63,15 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
                 thread = null;
 
             }catch(InterruptedException e){e.printStackTrace();}
-
         }
     }
 
     public void update(){
         for (Background aBg : bg) {
-            //update missile
+            //atualiza o backgroung
             aBg.update();
         }
+        player.update();
     }
 
     @Override
@@ -85,7 +87,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
             for (Background aBg : bg) {
                 aBg.draw(canvas);
             }
-
+            player.draw(canvas);
             canvas.restoreToCount(savedState);
         }
     }

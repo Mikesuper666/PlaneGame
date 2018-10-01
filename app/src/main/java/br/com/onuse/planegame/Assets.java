@@ -36,8 +36,10 @@ public class Assets {
         for(int i = 0; i <=4; i++){
             bitmapDb.put("bg"+i, getBitmap(context, "background/bg"+i+".png"));
         }
-        //player
+        //player + sprites
         bitmapDb.put("player", getBitmap(context, "sprites/player.png"));
+        bitmapDb.put("enemy", getBitmap(context, "sprites/enemy.png"));
+        bitmapDb.put("missile", getBitmap(context, "sprites/missile.png"));
     }
 
     /**

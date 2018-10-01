@@ -14,6 +14,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
     public static final int HEIGHT = 600;
     private MainThread thread;
     private ArrayList<Background> bg;
+    private ArrayList<Missile> missiles;
     private Player player;
     Typeface font;
     public GamePanel(Context context){
@@ -30,6 +31,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         bg = new ArrayList<>();
+        missiles = new ArrayList<>();
 
         bg.add(new Background(Assets.getBitmapFromMemory("bg0"),-1,0));
         bg.add(new Background(Assets.getBitmapFromMemory("bg1"),-2,(int)(HEIGHT * 0.34f)));
@@ -37,7 +39,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
         bg.add(new Background(Assets.getBitmapFromMemory("bg3"),-4,(int)(HEIGHT * 0.6f)));
         bg.add(new Background(Assets.getBitmapFromMemory("bg4"),-5,HEIGHT-45));
 
-        player = new Player(Assets.getBitmapFromMemory("player"),  120, 80, 2);
+        player = new Player(Assets.getBitmapFromMemory("enemy"),  130, 80, 3);
 
 
         thread = new MainThread(getHolder(), this);
@@ -73,6 +75,13 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
             aBg.update();
         }
         player.update();
+
+        //o primeiro missil sempre será no meio
+        if(missiles.size()==0) {
+            missiles.add(new Missile(Assets.getBitmapFromMemory("missile"), WIDTH + 10, HEIGHT / 2, 45, 15, 13));
+        }
+
+        missiles.get(0).update();
     }
 
     @Override
@@ -110,6 +119,12 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
                 aBg.draw(canvas);
             }
             player.draw(canvas);
+
+            //desenha os missils
+            for (Missile m : missiles) {
+                m.draw(canvas);
+            }
+
             canvas.restoreToCount(savedState);
         }
     }

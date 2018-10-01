@@ -2,12 +2,14 @@ package br.com.onuse.planegame;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
     public static final int WIDTH = 800;
@@ -16,7 +18,14 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
     private ArrayList<Background> bg;
     private ArrayList<Missile> missiles;
     private Player player;
+    private Random rand = new Random();
+    private int maxBorderHeight;
+    private int minBorderHeight;
+    private long smokeStartTime;
+    private long missileStartTime;
     Typeface font;
+    //aumenta a progressao da dificuldade
+    private int progressDenom = 20;
     public GamePanel(Context context){
         super(context);
         Assets assets = new Assets(getContext(), WIDTH, HEIGHT);
@@ -39,7 +48,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
         bg.add(new Background(Assets.getBitmapFromMemory("bg3"),-4,(int)(HEIGHT * 0.6f)));
         bg.add(new Background(Assets.getBitmapFromMemory("bg4"),-5,HEIGHT-45));
 
-        player = new Player(Assets.getBitmapFromMemory("enemy"),  130, 80, 3);
+        player = new Player(Assets.getBitmapFromMemory("player"),  120, 80, 2);
+        missileStartTime = System.nanoTime();
 
 
         thread = new MainThread(getHolder(), this);
@@ -76,12 +86,47 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
         }
         player.update();
 
-        //o primeiro missil sempre será no meio
-        if(missiles.size()==0) {
-            missiles.add(new Missile(Assets.getBitmapFromMemory("missile"), WIDTH + 10, HEIGHT / 2, 45, 15, 13));
-        }
+        // calcula o limite de altura que a borda pode ter com base na pontuação
+        // O limite máximo e mínimo da borda são atualizados, e a borda muda a direção quando
+        // min é atendido
 
-        missiles.get(0).update();
+        maxBorderHeight = 30+player.getScore()/progressDenom;
+        //limite a altura máxima da borda de modo que as bordas só possam ocupar um total de 1/2 da tela
+        if(maxBorderHeight > HEIGHT/4)maxBorderHeight = HEIGHT/4;
+        minBorderHeight = 5+player.getScore()/progressDenom;
+
+        //add missiles on timer
+        long missileElapsed = (System.nanoTime()-missileStartTime)/1000000;
+        if(missileElapsed >(2000 - player.getScore()/4)) {
+            //o primeiro missil sempre será no meio
+            if (missiles.size() == 0) {
+                missiles.add(new Missile(Assets.getBitmapFromMemory("enemy"), WIDTH + 10, HEIGHT / 2, 130, 80, player.getScore(), 3));
+            } else {
+                missiles.add(new Missile(Assets.getBitmapFromMemory("enemy"),
+                        WIDTH + 10, (int) (rand.nextDouble() * (HEIGHT - (maxBorderHeight * 2)) + maxBorderHeight), 130, 80, player.getScore(), 3));
+            }
+            //reset timer
+            missileStartTime = System.nanoTime();
+        }
+        //loop through every missile and check collision and remove
+        for(int i = 0; i<missiles.size();i++)
+        {
+            //update missile
+            missiles.get(i).update();
+
+            if(collision(missiles.get(i),player))
+            {
+                missiles.remove(i);
+                player.setPlaying(false);
+                break;
+            }
+            //remove missile if it is way off the screen
+            if(missiles.get(i).getX()<-100)
+            {
+                missiles.remove(i);
+                break;
+            }
+        }
     }
 
     @Override
@@ -127,5 +172,14 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
 
             canvas.restoreToCount(savedState);
         }
+    }
+
+    public boolean collision(GameObject a, GameObject b)
+    {
+        if(Rect.intersects(a.getRectangle(), b.getRectangle()))
+        {
+            return true;
+        }
+        return false;
     }
 }

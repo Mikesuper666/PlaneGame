@@ -12,19 +12,20 @@ public class Missile extends GameObject {
     private Animation animation = new Animation();
     private Bitmap spriteSheet;
 
-    public Missile(Bitmap res, int x, int y, int w, int h, int numberFrames){
+    public Missile(Bitmap res, int x, int y, int w, int h, int s, int numberFrames){
         spriteSheet = res;
         super.x = x;
         super.y = y;
         width = w;
         height = h;
+        score = s;
         speed = 7 + (int)(random.nextDouble()*score/30);
         if(speed>40)speed=40;
 
         Bitmap[] image = new Bitmap[numberFrames];
 
         for(int i = 0; i < image.length; i++){
-            image[i] = Bitmap.createBitmap(spriteSheet, 0, i*height, width, height);
+            image[i] = Bitmap.createBitmap(spriteSheet, i*width, 0, width, height);
         }
 
         animation.setFrames(image);
